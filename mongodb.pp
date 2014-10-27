@@ -12,8 +12,9 @@ class mongo {
    }
 
    apt::source { 'mongodb':
-      #     location => 'http://downloads-distro.mongodb.org/repo/ubuntu-upstart',
-      # wer're still using init 
+      # uncomment line below to use upstart script instead of init
+      # location => 'http://downloads-distro.mongodb.org/repo/ubuntu-upstart',
+      # we're still using init 
       # TODO: systemd ?
       location => 'http://downloads-distro.mongodb.org/repo/debian-sysvinit',
       release         => 'dist',
