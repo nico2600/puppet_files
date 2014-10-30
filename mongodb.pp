@@ -63,7 +63,10 @@ class mongo {
       require => Exec["mongo-apt-update"],
    }
 
-   # TODO: check user mongodb
-
+   user { "mongodb":
+      ensure  => present,
+      require => Package['mongodb-org'],
    }
+
+}
 
