@@ -10,6 +10,11 @@ class mongo {
       ensure => 'present',
       id   => '7F0CEB10',
    }
+   exec { "mongo-apt-update":
+      path        => "/bin:/usr/bin",
+      command     => "apt-get update",
+      unless      => "ls /usr/bin | grep mongo",
+   }
 
    apt::source { 'mongodb':
       # uncomment line below to use upstart script instead of init
@@ -27,32 +32,38 @@ class mongo {
    # RW for user mongodb
    file { ['/var/run/mongodb/','/var/lib/mongo']:
       ensure => 'directory',
+
    }
 
    file { 'mongodb.conf':
       path                    => '/etc/mongodb.conf',
       ensure                  => 'present',
-      require                 => Package['mongodb-org'],
       source                  => "puppet:///files/mongo/mongodb.conf",
+      # conf in RO for user mongodb
       mode                    => 644,
       owner                   => root,
       group                   => root,
       notify                  => Service["mongod"],
+      require                 => Package['mongodb-org'],
    }
 
    # Make sure that the nginx service is running
    service { 'mongod':
       ensure    => "running",
-      #   enable    => true, XXX: some bug, lead: package name different from service one ?
+      enable    => true,
       subscribe => File['mongodb.conf'],
    }
 
    # install shell, tools and server
    # user mongodb will be created too
+   # TODO: mongo-org is a metapackage, better to focus on a more specific one
+   # TODO: pin the version
    package { 'mongodb-org':
-      ensure => 'installed',
+      ensure  => 'installed',
+      require => Exec["mongo-apt-update"],
    }
 
    # TODO: check user mongodb
-}
+
+   }
 
