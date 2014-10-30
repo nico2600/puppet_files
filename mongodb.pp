@@ -31,8 +31,12 @@ class mongo {
 
    # RW for user mongodb
    file { ['/var/run/mongodb/','/var/lib/mongo']:
-      ensure => 'directory',
-
+      ensure  => 'directory',
+      mode    => 644,
+      owner   => mongodb,
+      group   => mongodb,
+      notify  => Service["mongod"],
+      require => Package['mongodb-org'],
    }
 
    file { 'mongodb.conf':
